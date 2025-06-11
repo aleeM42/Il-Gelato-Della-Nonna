@@ -34,28 +34,28 @@ app.get("/", (req, res) => {
 
 //ruta para servir la pagina de login
 app.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "views", "login.html"));
+    res.sendFile(path.join(__dirname, "frontend", "views", "perfil", "login.html"));
 });
 
 //ruta para servir la pagina de sign up
 app.get("/signup", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "views", "signup.html"));
+    res.sendFile(path.join(__dirname, "frontend", "views", "perfil", "signup.html"));
 });
 
 // Ruta para servir la página de consultar ventas
 app.get("/consultar-ventas", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "views", "consultarVenta.html"));
+    res.sendFile(path.join(__dirname, "frontend", "views","ventas", "consultarVenta.html"));
 });
 
 
 // Ruta para ver catalogo
 app.get("/catalogo", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "views", "catalogo.html"));
+    res.sendFile(path.join(__dirname, "frontend", "views", "carrito","catalogo.html"));
 });
 
 //Ruta para ver heladosAdmin
 app.get("/helados", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "views", "helados.html"));
+    res.sendFile(path.join(__dirname, "frontend", "views", "helados", "helados.html"));
 });
 
 
@@ -65,7 +65,7 @@ app.use("/api/usuarios", usuariosRoutes);
 
 // servir registrar ventas
 app.get('/registrar-ventas', function (req, res) {
-    res.render(path.join(__dirname, "frontend", "views", "registrarventas.ejs"));
+    res.render(path.join(__dirname, "frontend", "views","ventas", "registrarventas.ejs"));
 });
 
 // Validaciones
