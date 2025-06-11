@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Montserrat:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/script.js" defer></script>
+    <title>Title</title>
+</head>
+<body>
+<header id="header">
+    <div class="contenedor-header">
+        <nav class="navigation">
+            <img src="/img/Logo.png" class="icecreamlogo">
+            <div class="button-account">
+                <button class="account" onclick="togglePerfil()">
+                    <span class="material-symbols-outlined account-icon">account_circle</span>
+                </button>
+            </div>
+
+            <div id="perfilModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn" onclick="togglePerfil()">&times;</span>
+                    <h1>Datos del Cliente</h1>
+                    <div class="cliente-datos" id="datos-usuario">
+                        <p><strong>Nombre:</strong> <span id="nombre"></span></p>
+                        <p><strong>Email:</strong> <span id="email"></span></p>
+                        <p><strong>Cédula:</strong> <span id="cedula"></span></p>
+                        <p><strong>Contraseña:</strong> <span id="password"></span></p>
+                        <p><strong>Teléfono:</strong> <span id="phone"></span></p>
+                    </div>
+                    <button onclick="togglePerfil()">Cerrar</button>
+                    <button onclick="window.location.href='/'">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div class="button-cart">
+                <button class="button" id="toggleCart">
+                    <span class="material-symbols-outlined icon-cart">shopping_cart</span>
+                </button>
+                <span id="cartCount">0</span>
+            </div>
+            <aside id="cartAside" class="cart-aside">
+                <div class="cart-header">
+                    <h2>Carrito de Compras</h2>
+                    <button id="closeCart">&times;</button>
+                </div>
+                <div class="cart-content">
+                    <div id="cartItems"></div>
+                </div>
+                <div class="footer-cart">
+                    <h3>Total: <span id="cartTotal">$0</span></h3>
+                    <button id="emptyCart">Vaciar Carrito</button>
+                    <button id="finalizarBuy"> Finalizar Compra </button>
+                </div>
+            </aside>
+        </nav>
+    </div>
+</header>
+
+<section class="banner">
+    <div class="banner-container">
+        <h1>Catálogo</h1>
+        <div class="bienvenido-boton">
+            <span class="Bienvenido">Bienvenido</span>
+        </div>
+    </div>
+</section>
+<main>
+    <div id="contenedor">
+        <section class="categories">
+            <div class="">
+                <input type="text" placeholder="Buscar productos..." id="searchInput">
+                <h3>Categorías</h3>
+                <ul>
+                    <li>Tinitas</li>
+                    <li>Barquillas</li>
+                </ul>
+            </div>
+        </section>
+        <div id="listaProductos" class="helado">
+            <button>Filtrar</button>
+        </div>
+    </div>
+</main>
+<footer>
+    <div class="footer">
+        <img src="/img/footer.png">
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,216 @@
+* {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+header{
+    margin: 0;
+    background-color: #ffffff;
+    padding: 2%;
+    height: auto;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    padding: 10px;
+    background-color: white;
+    border-radius: 0.5rem;
+}
+
+
+
+.rosa{
+    color: rgb(248, 61, 142);
+    font-family: 'Berkshire Swash';
+}
+
+.morado{
+    color: rgb(119, 68, 156);
+    font-family: 'Berkshire Swash';
+}
+
+.blanco{
+    color: white
+}
+
+.titulo{
+    background: linear-gradient(90deg, #efd7ef, #f5f9fc, #f8eae1, #eaf8f9);
+    margin: 0;
+    font-weight: 400;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+}
+
+.titulo h1 {
+    font-family: 'Berkshire Swash';
+    font-size: 4rem;
+
+}
+
+.titulo.title{
+    padding-bottom: 2em;
+}
+
+main{
+    flex: 1;
+    width: 100%;
+}
+
+footer {
+    width: 100%;
+    background-color: #683292;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+
+.formulario{
+    width: 400px;
+    background: #f6eaf7;
+    border-radius: 10px;
+    padding: 1em;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 70px;
+}
+
+
+.formulario form{
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
+
+form .username,
+form .ordernumber,
+form .order,
+form .date,
+form .time{
+    position: relative;
+    border-bottom: 2px solid #adadad;
+    margin: 30px 0;
+}
+
+.username input,
+.ordernumber input,
+.order input,
+.date input,
+.time input{
+    width: 100%;
+    padding: 0 5px;
+    height: 40px;
+    font-size: 16px;
+    border: none;
+    background:none ;
+    outline: none;
+}
+
+.username label,
+.ordernumber label,
+.order label,
+.time label,
+.date label{
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    color: #adadad;
+    transform: translateY(-50%);
+    font-size: 16px;
+    pointer-events: none;
+    transition: .5s;
+}
+
+.username span::before,
+.ordernumber span::before,
+.order span::before,
+.time span::before,
+.date span::before{
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #000000;
+    transition: .5s;
+}
+
+.username input:focus ~ label,
+.ordernumber input:focus ~ label,
+.username input:valid ~ label,
+.ordernumber input:valid ~ label,
+.order input:focus ~ label,
+.time input:focus ~ label,
+.order input:valid ~ label,
+.time input:valid ~ label,
+.date input:focus ~ label,
+.date input:valid ~ label{
+    top: -5px;
+    color: #6C3483;
+}
+
+button.bot{
+    width: 100%;
+    height: 50px;
+    border: 1px solid;
+    background: #774490;
+    border-radius: 25px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    outline: none;
+
+}
+
+button.bot:hover,
+button.bott:hover{
+    background-color: #F83F8E;
+}
+
+
+.bott{
+    width: 30%;
+    height: 50px;
+    border: 1px solid;
+    background: #774490;
+    border-radius: 25px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    outline: none;
+}
+
+.botonregreso{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 2em;
+}
+
+
+.error{
+    color: red;
+    font-size:16px ;
+    padding-bottom: 2em;
+}
