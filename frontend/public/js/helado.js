@@ -1,6 +1,7 @@
 const botonNuevoHelado = document.querySelector('.boton-nuevo-helado');
 const consultarHeladoTodo = document.querySelector('.consultar-helado-todo');
-const agregarHelado = document.getElementById('agregar-helado');
+document.getElementById("agregar-helado")
+    .addEventListener("submit", procesarYGuardarHelado);
 const botonCancelarAgregar =  document.querySelector('.btn-cancelar');
 const imagenInput = document.getElementById('boton-llenar-imagen');
 const previewImagen = document.getElementById('preview-imagen');
@@ -48,8 +49,6 @@ async function cargarProductos() {
         }
 
         renderizarHelados(productos);
-        renderProductos(productos);
-        renderizarCarrito(productos);
     } catch (error) {
         console.error("Error al obtener los productos:", error);
     }
@@ -57,98 +56,19 @@ async function cargarProductos() {
 
 document.addEventListener("DOMContentLoaded", cargarProductos);
 
-function mostrarProductos(productos) {
-    listaProductos.innerHTML = ""; // Limpiamos la lista
-    productos.forEach(producto => {
-        const productoHTML = `
-            <div class="producto">
-                <img src="${producto.imagen}" alt="${producto.nombre}">
-                <h3>${producto.nombre}</h3>
-                <p>${producto.descripcion}</p>
-                <span>Precio: $${producto.precio}</span>
-                <button onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
-            </div>
-        `;
-        listaProductos.innerHTML += productoHTML;
-    });
-}
-
-function mostrarAdministrador() {
-    document.getElementById('seccionCliente').classList.add('oculto');
-    document.getElementById('seccionAdmin').classList.remove('oculto');
-    manejarPaginacion();
-}
-
 function mostrarConsultarHelado() {
+    const agregarHelado = document.getElementById("agregar-helado");
     consultarHeladoTodo.classList.remove('oculto');
     agregarHelado.classList.add('oculto');
     manejarPaginacion();
 }
 
 function mostrarAgregarHelado() {
+    const agregarHelado = document.getElementById("agregar-helado");
     consultarHeladoTodo.classList.add('oculto');
     agregarHelado.classList.remove('oculto');
     manejarPaginacion();
 }
-
-// FALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA PARA ADMIN
-
-agregarHelado.addEventListener("submit", async (event) => {
-    event.preventDefault(); // Evitar recargar la página
-
-    const nombre = document.getElementById("nombre").value;
-    const descripcion = document.getElementById("descripcion").value;
-    const precio = document.getElementById("precio").value;
-    const stock = document.getElementById("stock").value;
-    const imagen = document.getElementById("imagen").value;
-
-    const file = imagen.files[0];
-    if (!file) {
-        alert('Por favor selecciona una imagen');
-        return;
-    }
-
-    async function resizeAndCompress(file, maxWidth = 1024, quality = 0.6) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                const img = new Image();
-                img.src = reader.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const scale = maxWidth / img.width;
-                    canvas.width = maxWidth;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    // Convertir a base64 comprimido en JPEG (puedes cambiar a 'image/png' si prefieres)
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-                    resolve(compressedBase64);
-                };
-                img.onerror = error => reject(error);
-            };
-            reader.onerror = error => reject(error);
-        });
-    }
-
-    try {
-        const imagenComprimida = await resizeAndCompress(file);
-
-        const respuesta = await fetch("http://localhost:3000/api/productos", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre, descripcion, precio, stock, imagen: imagenComprimida })
-        });
-
-        if (respuesta.ok) {
-            alert("Producto agregado correctamente");
-            cargarProductos(); // Recargar lista después de agregar
-        }
-    } catch (error) {
-        console.error("Error al agregar el producto:", error);
-    }
-});
 
 if (cerrarPopup) {
     cerrarPopup.addEventListener("click", cerrarModal);
@@ -219,7 +139,6 @@ function renderizarHelados(productos) {
             </div>
         `;
         contenedorFilas.appendChild(fila);
-
         const linea = document.createElement("div");
         linea.className = "linea-contenedor";
         contenedorFilas.appendChild(linea);
@@ -304,16 +223,6 @@ async function filtrarHelados(texto) {
     }
 }
 
-function filtrarHelados(texto) {
-    if (!texto) return productos;
-    return productos.filter(producto =>
-        producto.nombre.toLowerCase().includes(texto.toLowerCase()) ||
-        producto.descripcion.toLowerCase().includes(texto.toLowerCase()) ||
-        producto.precio.toString().includes(texto) ||
-        producto.id.toString().includes(texto)
-    );
-}
-
 inputBuscar?.addEventListener("input", async function() {
     const texto = this.value.trim();
 
@@ -388,7 +297,7 @@ async function validarCampos() {
     }
 
     if (!imagenInput.value.trim()) {
-        errores.push("La ruta de la imagen es obligatoria");
+        errores.push("La imagen es obligatoria");
         esValido = false;
     }
 
@@ -400,62 +309,84 @@ async function validarCampos() {
     return esValido;
 }
 
-// Función para guardar el nuevo helado
-async function guardarHelado() {
-    // Verificar que se haya seleccionado una imagen
-    if (!imagenSeleccionada) {
-        alert("Debes seleccionar una imagen");
+async function procesarYGuardarHelado(event) {
+    event.preventDefault(); // Detener el formulario
+
+    if (!validarCampos()) return;
+
+    const nombre = nombreInput.value.trim();
+    const descripcion = descripcionInput.value.trim();
+    const precio = parseFloat(precioInput.value);
+    const stock = parseInt(stockInput.value);
+    const inputImagen = document.getElementById("boton-llenar-imagen");
+    const file = inputImagen.files[0];
+
+    if (!file) {
+        alert("Por favor selecciona una imagen.");
         return;
     }
 
-    // Solo continua si la validación de campos es exitosa
-    if (validarCampos()) {
-        // Extraer y limpiar valores
-        const nombre = nombreInput.value.trim();
-        const descripcion = descripcionInput.value.trim();
-        const precio = parseFloat(precioInput.value);
-        const stock = parseInt(stockInput.value);
-
-        // Verificamos que precio y stock sean números válidos
-        if (isNaN(precio) || isNaN(stock)) {
-            alert("El precio o el stock no son números válidos");
-            return;
-        }
-
-        // Construir el objeto producto
+    try {
+        const imagenComprimida = await comprimirImagen(file);
+        console.log("Longitud de imagen base64:", imagenComprimida.length);
         const nuevoHelado = {
             nombre,
             descripcion,
-            precio, // Número
-            stock,  // Número
-            imagen: imagenSeleccionada
+            precio,
+            stock,
+            imagen: imagenComprimida // Base64 ya comprimido
         };
 
-        // Imprimir en consola para depurar
-        console.log("Payload a enviar:", nuevoHelado);
+        console.log("Enviando a backend:", nuevoHelado);
 
-        try {
-            const respuesta = await fetch("http://localhost:3000/api/productos", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(nuevoHelado)
-            });
+        const respuesta = await fetch("http://localhost:3000/api/productos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevoHelado)
+        });
 
-            if (respuesta.ok) {
-                alert("Helado guardado correctamente");
-                limpiarFormulario();
-                cargarProductos(); // Recargar lista después de agregar
-            } else {
-                // Intentar obtener el mensaje de error de la respuesta
-                const errorData = await respuesta.json();
-                console.error("Error al guardar el producto:", errorData);
-                alert("Error al guardar el producto: " + (errorData.mensaje || "desconocido"));
-            }
-        } catch (error) {
-            console.error("Error al guardar el producto:", error);
-            alert("Error al guardar el producto, revisa la consola para más detalles.");
+        if (!respuesta.ok) {
+            const textoPlano = await respuesta.text();
+            console.error("Respuesta de error:", textoPlano);
+            alert("Error al guardar el producto. Revisa la consola.");
+        } else {
+            alert("Producto guardado exitosamente.");
+            limpiarFormulario();
+            cargarProductos();
         }
+    } catch (error) {
+        console.error("Error en el proceso:", error);
+        alert("Ocurrió un error inesperado.");
     }
+}
+
+async function comprimirImagen(file, maxWidth = 600, quality = 0.5) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+            const img = new Image();
+            img.src = reader.result;
+
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const scale = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scale;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+                resolve(compressedBase64);
+            };
+
+            img.onerror = err => reject(err);
+        };
+
+        reader.onerror = err => reject(err);
+    });
 }
 
 function limpiarFormulario() {
@@ -470,7 +401,7 @@ function limpiarFormulario() {
 }
 
 // Asignar evento al botón de guardar
-btnGuardar.addEventListener('click', guardarHelado);
+btnGuardar.addEventListener('click', procesarYGuardarHelado);
 
 btnCancelar.addEventListener('click', function() {
     limpiarFormulario();

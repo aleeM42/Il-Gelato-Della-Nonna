@@ -9,19 +9,18 @@ const cors = require("cors");
 const mysql = require('mysql2');
 
 
-app.use("/api/productos", productoRoutes);
 
 
-// Middlewares
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(bodyParser.json());
+//Middlewares
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "5mb" })); // este es el que importa
+app.use(bodyParser.json()); // opcional si ya usas express.json()
 
-app.use(express.static('./vista'));
-app.set('views', './vista');
-app.set('view engine', 'ejs');
-const db = require("./backend/config/db");
+//Rutas backend
+app.use("/api/productos", productoRoutes);
+app.use("/api/ventas", ventaRoutes);
+app.use("/api/usuarios", usuariosRoutes);
 
 
 // Servir archivos estáticos del frontend
@@ -47,7 +46,6 @@ app.get("/consultar-ventas", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "views","ventas", "consultarVenta.html"));
 });
 
-
 // Ruta para ver catalogo
 app.get("/catalogo", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "views", "carrito","catalogo.html"));
@@ -57,11 +55,6 @@ app.get("/catalogo", (req, res) => {
 app.get("/helados", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "views", "helados", "helados.html"));
 });
-
-
-// Usar rutas del backend
-app.use("/api/ventas", ventaRoutes);
-app.use("/api/usuarios", usuariosRoutes);
 
 // servir registrar ventas
 app.get('/registrar-ventas', function (req, res) {

@@ -1,3 +1,18 @@
+.log-out {
+    border: none;
+    margin: 10px 0 10px 10px;
+    display: flex;
+    align-items: center;
+    background-color: #f83d8e;
+    color: white;
+    text-align: center;
+    border-radius: 1.5rem;
+    padding: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
 * {
     font-family: "Montserrat", sans-serif;
     font-optical-sizing: auto;
