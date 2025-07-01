@@ -219,6 +219,7 @@ function iniciarApp() {
     cargarProductos();    // Cargamos los productos desde la base de datos
 }
 
+//PERFIL
 function togglePerfil() {
     const perfilModal = document.getElementById("perfilModal");
 
@@ -255,6 +256,78 @@ async function loadPerfil() {
         console.error(err);
         alert("Error al cargar los datos del perfil");
     }
+}
+
+async function activarEdicion() {
+    const email = localStorage.getItem("email");
+
+    if (!email) {
+        alert("No se encontró tu email. Por favor inicia sesión nuevamente.");
+        window.location.href = "/login";
+        return;
+    }
+
+    const nombre = prompt("Nuevo nombre:", document.getElementById("nombre").textContent);
+    const cedula = prompt("Nueva cédula:", document.getElementById("cedula").textContent);
+    const password = prompt("Nueva contraseña:", document.getElementById("password").textContent);
+    const phone = prompt("Nuevo teléfono:", document.getElementById("phone").textContent);
+
+    if (!nombre || !cedula || !password || !phone) {
+        alert("Todos los campos son obligatorios.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/usuarios/perfil/${encodeURIComponent(email)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, cedula, password, phone })
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error("Respuesta no válida:", errorText);
+            alert("Error del servidor al actualizar el perfil");
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data.exito) {
+            alert("Perfil actualizado correctamente");
+            loadPerfil();
+        } else {
+            alert("Error al actualizar: " + data.mensaje);
+        }
+
+    } catch (err) {
+        console.error("Fallo en la actualización del perfil:", err);
+        alert("Hubo un problema al comunicarse con el servidor");
+    }
+}
+
+function eliminarMiPerfil() {
+    if (!confirm("¿Estás seguro de que deseas eliminar tu perfil permanentemente?")) return;
+
+    const email = localStorage.getItem("email");
+
+    fetch(`/api/usuarios/perfil/${encodeURIComponent(email)}`, {
+        method: "DELETE"
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.exito) {
+                alert("Perfil eliminado correctamente");
+                localStorage.clear();
+                window.location.href = "/";
+            } else {
+                alert("Error al eliminar perfil: " + data.mensaje);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Fallo en la eliminación del perfil");
+        });
 }
 
 //FINALIZAR PEDIDO
