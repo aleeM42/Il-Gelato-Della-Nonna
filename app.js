@@ -7,9 +7,8 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require('mysql2');
-
-
-
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "frontend", "views"));
 
 //Middlewares
 app.use(cors());
@@ -57,44 +56,9 @@ app.get("/helados", (req, res) => {
 });
 
 // servir registrar ventas
-app.get('/registrar-ventas', function (req, res) {
-    res.render(path.join(__dirname, "frontend", "views","ventas", "registrarventas.ejs"));
+app.get("/registrar-ventas", (req, res) => {
+    res.render("ventas/registrarventas");
 });
-
-// Validaciones
-function validarNombre(user) {
-    return /^[a-zA-Z\s]+$/.test(user);
-}
-function validarNumero(number) {
-    return /^[0-9]+$/.test(number);
-}
-function validarOrden(orden) {
-    return /^[a-zA-Z\s]+$/.test(orden);
-}
-
-// Ruta para guardar datos en la BD
-app.post('/guardardatos', async (req, res) => {
-    try {
-        // Obtener los datos del formulario
-        const { user, number, orden,fecha, hora } = req.body;
-
-        if (!validarNombre(user) || !validarNumero(number) || !validarOrden(orden)){
-            throw new Error("Uno de los campos fue llenado de forma incorrecta");
-        }
-
-        // Insertar los datos en la base de datos (ejemplo)
-        const values = [user,orden,fecha,hora,parseInt(number)];
-        const query = `INSERT INTO ventas  (cliente,pedido,fecha,hora,nOrden) VALUES (?) `;
-        db.query(query,[values]);
-
-        // Responder al cliente
-        res.redirect("/consultar-ventas");
-    } catch (error) {
-        console.error('Error al guardar los datos:', error);
-        res.status(500).render(path.join(__dirname, "frontend", "views", "registrarventas.ejs"),{error:error});
-    }
-});
-
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));

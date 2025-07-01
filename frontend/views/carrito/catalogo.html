@@ -28,7 +28,7 @@
 
             <div id="perfilModal" class="modal">
                 <div class="modal-content">
-                    <span class="close-btn" onclick="togglePerfil()">&times;</span>
+                    <span class="close-btn1" onclick="togglePerfil()">&times;</span>
                     <h1>Datos del Cliente</h1>
                     <div class="cliente-datos" id="datos-usuario">
                         <p><strong>Nombre:</strong> <span id="nombre"></span></p>
@@ -37,7 +37,6 @@
                         <p><strong>Contraseña:</strong> <span id="password"></span></p>
                         <p><strong>Teléfono:</strong> <span id="phone"></span></p>
                     </div>
-                    <button onclick="togglePerfil()">Cerrar</button>
                     <button onclick="window.location.href='/'">Cerrar Sesión</button>
                 </div>
             </div>
@@ -60,6 +59,22 @@
                     <h3>Total: <span id="cartTotal">$0</span></h3>
                     <button id="emptyCart">Vaciar Carrito</button>
                     <button id="finalizarBuy"> Finalizar Compra </button>
+                </div>
+                <!-- Modal del resumen del pedido -->
+                <div id="modalPedido" class="modal">
+                    <div class="modal-content">
+                        <button class="modal-close" id="cerrarPedido">&times;</button>
+                        <h2>Resumen de tu pedido</h2>
+                        <div id="detallePedido">
+                            <!-- Aquí se llenará el resumen del carrito dinámicamente -->
+                        </div>
+
+                        <label for="refPago">Referencia de Pago Móvil (últimos 4 dígitos):</label>
+                        <input type="text" id="refPago" maxlength="4" pattern="\d{4}" required>
+
+                        <button id="confirmarPedidoBtn">Confirmar Pedido</button>
+                        <p id="ordenGenerada"></p>
+                    </div>
                 </div>
             </aside>
         </nav>

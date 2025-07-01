@@ -1,4 +1,4 @@
-const db = require('../config/db'); // Asegúrate que esta ruta esté bien
+const db = require('../config/db');
 const { Usuario, Admin } = require('../models/Usuario');
 
 async function crearPerfil(nombre, email, cedula, password, phone, esAdmin = false) {

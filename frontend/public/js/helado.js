@@ -378,7 +378,7 @@ async function comprimirImagen(file, maxWidth = 600, quality = 0.5) {
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+                const compressedBase64 = canvas.toDataURL("image/png", quality);
                 resolve(compressedBase64);
             };
 

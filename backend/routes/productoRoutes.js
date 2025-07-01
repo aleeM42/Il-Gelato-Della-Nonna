@@ -5,7 +5,8 @@ const productoController = require("../controllers/productoController");
 // Definir rutas
 router.get("/", productoController.obtenerProductos);
 router.post("/", productoController.agregarProducto);
-router.delete("/:id", productoController.eliminarProducto);
+router.put("/:id/reducir-stock", productoController.reducirStock);
+
 
 module.exports = router;
 

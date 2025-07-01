@@ -257,6 +257,118 @@ async function loadPerfil() {
     }
 }
 
+//FINALIZAR PEDIDO
+document.getElementById("finalizarBuy").addEventListener("click", () => {
+    mostrarResumenPedido();
+    console.log("Botón Finalizar Compra clickeado");
+    const modal = document.getElementById("modalPedido");
+    modal.style.display = "flex";
+
+  });
+
+function mostrarResumenPedido() {
+    const contenedor = document.getElementById("detallePedido");
+    contenedor.innerHTML = "";
+
+    if (carrito.length === 0) {
+        contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+        return;
+    }
+
+    let total = 0;
+    const lista = document.createElement("ul");
+    lista.style.paddingLeft = "1em";
+
+    carrito.forEach(producto => {
+        const precioNumerico = parseFloat(producto.precio);
+        const subtotal = precioNumerico * producto.cantidad;
+        total += subtotal;
+
+        const item = document.createElement("li");
+        item.textContent = `${producto.cantidad}x ${producto.nombre} - $${subtotal.toFixed(2)}`;
+        lista.appendChild(item);
+    });
+
+    contenedor.appendChild(lista);
+
+    const totalParrafo = document.createElement("p");
+    totalParrafo.style.fontWeight = "bold";
+    totalParrafo.textContent = `Total: $${total.toFixed(2)}`;
+    contenedor.appendChild(totalParrafo);
+}
+
+
+document.getElementById("confirmarPedidoBtn").addEventListener("click", async () => {
+
+    const refInput = document.getElementById("refPago");
+    const referencia = refInput.value.trim();
+    const mensajeOrden = document.getElementById("ordenGenerada");
+
+    // Validación: exactamente 4 dígitos
+    if (!/^\d{4}$/.test(referencia)) {
+        refInput.focus();
+        showAlert("Debes ingresar una referencia válida de 4 dígitos", 'error');
+        return;
+    }
+
+    if (carrito.length === 0) {
+        showAlert("Tu carrito está vacío. No se puede generar la orden", 'error');
+        return;
+    }
+
+    // Generar número único de orden
+    const timestamp = Date.now();
+    const numeroOrden = `ORD-${timestamp.toString().slice(-6)}`;
+
+    // Mostrar mensaje en pantalla
+    mensajeOrden.innerHTML = `
+        <strong>¡Pedido confirmado!</strong><br>
+        Referencia: ${referencia}<br>
+        Número de orden: <span style="color:green">${numeroOrden}</span>
+    `;
+
+    try {
+        // Iterar sobre los productos del carrito y reducir stock
+        for (const item of carrito) {
+            await fetch(`/api/productos/${item.id}/reducir-stock`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cantidad: item.cantidad })
+            });
+        }
+
+        showAlert("Pedido confirmado", 'success');
+
+        // Limpiar campo y resetear interfaz
+        refInput.value = "";
+        carrito.length = 0;
+        renderizarCarrito();
+        actualizarTotal();
+
+    } catch (error) {
+        console.error("Error al confirmar el pedido:", error);
+        showAlert("Hubo un error al procesar el pedido", 'error');
+    }
+
+    const now = new Date();
+    const fecha = now.toISOString().split("T")[0];
+    const hora = now.toTimeString().slice(0, 5);
+
+    await fetch("/api/ventas/pendiente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            numeroOrden: numeroOrden,
+            referencia: referencia,
+            fecha,
+            hora
+        })
+    });
+});
+
+document.getElementById("cerrarPedido").addEventListener("click", () => {
+    document.getElementById("modalPedido").style.display = "none";
+});
 
 // Iniciar la aplicación cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", iniciarApp);

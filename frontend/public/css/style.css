@@ -12,6 +12,85 @@
     display: none !important;
 }
 
+
+.hidden {
+    display: none;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+}
+.modal-content h1 {
+    font-family: 'Berkshire Swash', cursive;
+    color: #683292;
+    margin-bottom: 1.2rem;
+    font-size: 2rem;
+}
+
+/* Cuerpo con los datos */
+.cliente-datos p {
+    font-size: 1rem;
+    margin: 0.6rem 0;
+    color: #3d3d3d;
+}
+
+.cliente-datos strong {
+    color: #683292;
+}
+
+/* Botones */
+.modal-content button {
+    margin-top: 1.2rem;
+    background-color: #f83d8e;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+    background-color: #683292;
+}
+
+/* Botón de cerrar (X) en la esquina */
+.close-btn1 {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 4rem;
+    color: #f83d8e;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.1);
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -1284,4 +1363,126 @@ body.modal-abierto {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+/* Fondo del modal (pantalla oscura) */
+.modal {
+    display: none; /* se activa con JS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Contenedor interno del contenido */
+.modal-content {
+    background-color: #fef6f9;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.4s ease;
+}
+
+/* Animación suave al abrir */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    font-family: "Berkshire Swash", serif;
+    font-size: 2rem;
+    color: #683292;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Estilo del resumen de pedido */
+#detallePedido ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#detallePedido p {
+    font-weight: bold;
+    text-align: right;
+    color: #444;
+}
+
+/* Campo de referencia */
+label[for="refPago"] {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 500;
+    color: #4a0e68;
+}
+
+#refPago {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 2px solid #f83d8e;
+    border-radius: 1rem;
+    margin-top: 0.3rem;
+    box-sizing: border-box;
+}
+
+/* Botón confirmar */
+#confirmarPedidoBtn {
+    background-color: #f83d8e;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+#confirmarPedidoBtn:hover {
+    background-color: #683292;
+}
+
+/* Mensaje de orden generada */
+#ordenGenerada {
+    margin-top: 1rem;
+    color: #2d682d;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+/* Botón de cerrar (X) */
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #f83d8e;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+    transform: scale(1.1);
 }
