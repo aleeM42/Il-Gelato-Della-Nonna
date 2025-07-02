@@ -115,6 +115,11 @@ body {
     transition: transform 0.2s ease-in-out;
 }
 
+
+.pagoMovil{
+    display: flex;
+    flex-direction: column;
+}
 /*============================================================================
   2. Botones y Contenedores Comunes
 ============================================================================*/
