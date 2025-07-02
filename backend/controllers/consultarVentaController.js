@@ -108,3 +108,30 @@ exports.confirmarVentaPendiente = async (req, res) => {
         res.status(500).json({ mensaje: "Error interno", error: err.message });
     }
 };
+    exports.modificarVenta = async (req, res) => {
+    const { id } = req.params;
+    const { cliente, pedido, fecha, hora, nOrden } = req.body;
+    try {
+        // Construir la consulta de actualización
+        const query = `UPDATE ventas SET cliente = ?, nOrden = ?, fecha = ?, hora = ?, pedido = ? WHERE id = ?`;
+        const params = [cliente, nOrden, fecha, hora, pedido, id]; // Asegúrate de incluir el pedido aquí
+        await db.query(query, params);
+        res.status(200).json({ mensaje: "Venta actualizada correctamente" });
+    } catch (error) {
+        console.error("Error al modificar la venta:", error);
+        res.status(500).json({ mensaje: "Error interno" });
+    }
+};
+
+
+
+exports.eliminarVenta = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query("DELETE FROM ventas WHERE id = ?", [id]);
+        res.status(200).json({ mensaje: "Venta eliminada correctamente" });
+    } catch (error) {
+        console.error("Error al eliminar la venta:", error);
+        res.status(500).json({ mensaje: "Error interno" });
+    }
+};
