@@ -10,21 +10,6 @@ main{
     width: 100%;
 }
 
-
-.log-out {
-    border: none;
-    margin: 10px 0 10px 10px;
-    display: flex;
-    align-items: center;
-    background-color: #f83d8e;
-    color: white;
-    text-align: center;
-    border-radius: 1.5rem;
-    padding: 0.8rem;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-}
 button {
     border: none;
 }
@@ -210,4 +195,111 @@ footer{
 .texto-footer{
     border-top: 2px solid white;
     padding: 5px;
+}
+
+/* Añade al final del archivo */
+.acciones {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-editar, .btn-eliminar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.btn-editar:hover {
+    color: #4CAF50;
+    transform: scale(1.2);
+}
+
+.btn-eliminar:hover {
+    color: #f44336;
+    transform: scale(1.2);
+}
+
+/* Estilos para el modal de ventas */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.info-extra-helado {
+    width: 400px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Iconos específicos para ventas */
+.icono-orden {
+    background-image: url('/img/icono-orden.png');
+    width: 24px;
+    height: 24px;
+}
+
+.icono-fecha {
+    background-image: url('/img/icono-fecha.png');
+    width: 24px;
+    height: 24px;
+}
+
+.icono-hora {
+    background-image: url('/img/icono-hora.png');
+    width: 24px;
+    height: 24px;
+}
+.input-modal {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.botones-modal {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-guardar {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-cancelar {
+    background-color: #f39c12;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-eliminar {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }

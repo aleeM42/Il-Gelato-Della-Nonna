@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { crearPerfil, iniciarSesion, obtenerPerfil } = require('../controllers/controladorUsuario');
+const { crearPerfil, iniciarSesion, obtenerPerfil, eliminarPerfil, actualizarPerfil } = require('../controllers/controladorUsuario');
 
 // Registrar usuario
 router.post('/registrar', async (req, res) => {
@@ -51,5 +51,13 @@ router.get('/perfil/:email', async (req, res) => {
         res.status(500).json({ mensaje: 'Error al obtener el perfil' });
     }
 });
+router.put('/perfil/:email', async (req, res) => {
+    const resultado = await actualizarPerfil(req.params.email, req.body);
+    res.status(resultado.exito ? 200 : 400).json(resultado);
+});
 
+router.delete('/perfil/:email', async (req, res) => {
+    const resultado = await eliminarPerfil(req.params.email);
+    res.status(resultado.exito ? 200 : 400).json(resultado);
+});
 module.exports = router;

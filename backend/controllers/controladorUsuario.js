@@ -1,4 +1,4 @@
-const db = require('../config/db'); // Asegúrate que esta ruta esté bien
+const db = require('../config/db');
 const { Usuario, Admin } = require('../models/Usuario');
 
 async function crearPerfil(nombre, email, cedula, password, phone, esAdmin = false) {
@@ -63,8 +63,36 @@ async function obtenerPerfil(email) {
     return rows[0];
 }
 
+async function actualizarPerfil(emailOriginal, nuevoPerfil) {
+    try {
+        const { nombre, cedula, password, phone } = nuevoPerfil;
+        const [resultado] = await db.query(
+            `UPDATE usuarios SET nombre = ?, cedula = ?, password = ?, phone = ? WHERE email = ?`,
+            [nombre, cedula, password, phone, emailOriginal]
+        );
+
+        return { exito: true, mensaje: "Perfil actualizado correctamente" };
+    } catch (err) {
+        console.error("Error al actualizar perfil:", err);
+        return { exito: false, mensaje: "Error al actualizar el perfil" };
+    }
+}
+
+async function eliminarPerfil(email) {
+    try {
+        const [resultado] = await db.query(`DELETE FROM usuarios WHERE email = ?`, [email]);
+
+        return { exito: true, mensaje: "Perfil eliminado correctamente" };
+    } catch (err) {
+        console.error("Error al eliminar perfil:", err);
+        return { exito: false, mensaje: "Error al eliminar el perfil" };
+    }
+}
+
 module.exports = {
     crearPerfil,
     iniciarSesion,
-    obtenerPerfil
+    obtenerPerfil,
+    eliminarPerfil,
+    actualizarPerfil
 };

@@ -12,6 +12,85 @@
     display: none !important;
 }
 
+
+.hidden {
+    display: none;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+}
+.modal-content h1 {
+    font-family: 'Berkshire Swash', cursive;
+    color: #683292;
+    margin-bottom: 1.2rem;
+    font-size: 2rem;
+}
+
+/* Cuerpo con los datos */
+.cliente-datos p {
+    font-size: 1rem;
+    margin: 0.6rem 0;
+    color: #3d3d3d;
+}
+
+.cliente-datos strong {
+    color: #683292;
+}
+
+/* Botones */
+.modal-content button {
+    margin-top: 1.2rem;
+    background-color: #f83d8e;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+    background-color: #683292;
+}
+
+/* Botón de cerrar (X) en la esquina */
+.close-btn1 {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 4rem;
+    color: #f83d8e;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.1);
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -748,8 +827,6 @@ footer {
 }
 
 
-/*--- Admin ---*/
-
 #seccionAdmin{
     margin: 0;
     padding: 0;
@@ -971,19 +1048,19 @@ footer {
     color: #000;
 }
 
-.ID, .nombre, .precio, .info {
+.ID, .nombre, .precio, .modificar,.info {
     flex: 1;
     min-width: 0;
 }
 
-.info img {
+.info img, .modificar img {
     width: 20px;
     height: 20px;
     transition: transform 0.2s ease, opacity 0.2s ease;
     opacity: 0.7; /* Opcional: hace el icono un poco transparente */
 }
 
-.info img:hover {
+.info img:hover, .modificar img:hover{
     transform: scale(1.2); /* Agranda el icono */
     opacity: 1; /* Opcional: lo hace más opaco */
     cursor: pointer; /* Cambia el cursor a "mano" */
@@ -1148,6 +1225,163 @@ body.modal-abierto {
     color: #333;
     line-height: 1.4;
 }
+/*Pop-up modificar*/
+/* Modal overlay */
+#modal-modificar-overlay.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+body.modal-abierto {
+    overflow: hidden;
+}
+
+/* Contenedor del popup modificar */
+.modificar-helado {
+    width: 400px;
+    min-height: 350px;
+    padding: 20px 32px 32px 32px;
+    border-radius: 10px;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    font-family: Poppins, sans-serif;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Icono de cerrar */
+.btn-cerrar-modificar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 24px;
+    height: 24px;
+    background-image: url('/img/cerrar.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    border: none;
+    background-color: transparent;
+}
+
+.btn-cerrar-modificar:hover {
+    opacity: 0.8;
+}
+
+/* Contenido del formulario */
+#form-modificar-helado {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#form-modificar-helado label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+#form-modificar-helado input[type="text"],
+#form-modificar-helado input[type="number"],
+#form-modificar-helado textarea {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+    color: #000;
+}
+
+#form-modificar-helado textarea {
+    min-height: 60px;
+}
+
+#preview-imagen-modificar {
+    width: 100px;
+    height: 100px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#preview-imagen-modificar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Botones */
+.btn-guardar-modificacion,
+.btn-cancelar-modificacion {
+    padding: 10px 15px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-guardar-modificacion {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-guardar-modificacion:hover {
+    background-color: #45a049;
+}
+
+.btn-cancelar-modificacion {
+    background-color: #ccc;
+    color: #333;
+    margin-left: 10px;
+}
+
+.btn-cancelar-modificacion:hover {
+    background-color: #b3b3b3;
+}
+.contenedor-botones-modificar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-eliminar-modificacion {
+    padding: 10px 15px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #f44336;
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+.btn-eliminar-modificacion:hover {
+    background-color: #d32f2f;
+}
+
+/* Contenedor de botones para alinearlos a la derecha */
+.contenedor-botones {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
 
 .agregar-nuevo-helado {
     width: 1347px;
@@ -1284,4 +1518,126 @@ body.modal-abierto {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+/* Fondo del modal (pantalla oscura) */
+.modal {
+    display: none; /* se activa con JS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Contenedor interno del contenido */
+.modal-content {
+    background-color: #fef6f9;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.4s ease;
+}
+
+/* Animación suave al abrir */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    font-family: "Berkshire Swash", serif;
+    font-size: 2rem;
+    color: #683292;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Estilo del resumen de pedido */
+#detallePedido ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#detallePedido p {
+    font-weight: bold;
+    text-align: right;
+    color: #444;
+}
+
+/* Campo de referencia */
+label[for="refPago"] {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 500;
+    color: #4a0e68;
+}
+
+#refPago {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 2px solid #f83d8e;
+    border-radius: 1rem;
+    margin-top: 0.3rem;
+    box-sizing: border-box;
+}
+
+/* Botón confirmar */
+#confirmarPedidoBtn {
+    background-color: #f83d8e;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+#confirmarPedidoBtn:hover {
+    background-color: #683292;
+}
+
+/* Mensaje de orden generada */
+#ordenGenerada {
+    margin-top: 1rem;
+    color: #2d682d;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+/* Botón de cerrar (X) */
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #f83d8e;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+    transform: scale(1.1);
 }

@@ -23,7 +23,19 @@ const stockInput = document.getElementById('boton-llenar-stock');
 const descripcionInput = document.getElementById('boton-llenar-descripcion');
 const btnGuardar = document.querySelector('.btn-guardar');
 const btnCancelar = document.querySelector('.btn-cancelar');
-
+//modificar
+const modalModificarOverlay = document.getElementById('modal-modificar-overlay');
+const formModificar = document.getElementById('form-modificar-helado');
+const inputModificarId = document.getElementById('modificar-id');
+const inputModificarNombre = document.getElementById('modificar-nombre');
+const inputModificarStock = document.getElementById('modificar-stock');
+const inputModificarPrecio = document.getElementById('modificar-precio');
+const inputModificarDescripcion = document.getElementById('modificar-descripcion');
+const inputModificarImagen = document.getElementById('modificar-imagen');
+const previewImagenModificar = document.getElementById('preview-imagen-modificar');
+const btnCancelarModificar = modalModificarOverlay.querySelector('.btn-cancelar-modificacion');
+const cerrarPopupModificar = modalModificarOverlay.querySelector('.cerrar-popup-modificar');
+const btnEliminarModificar = modalModificarOverlay.querySelector('.btn-eliminar-modificacion');
 
 /////// ADMIN AGREGAR HELADOS ///////////
 // Cargar productos desde la API
@@ -134,6 +146,9 @@ function renderizarHelados(productos) {
             <div class="ID">${producto.id}</div>
             <div class="nombre">${producto.nombre}</div>
             <div class="precio">$${precioNumerico.toFixed(2)}</div>
+            <div class="modificar">
+                <img src="/img/icono-modificar.png" alt="modificar" width="20" height="20">
+            </div>
             <div class="info">
                 <img src="/img/icono-info.png" alt="info" width="20" height="20">
             </div>
@@ -142,14 +157,211 @@ function renderizarHelados(productos) {
         const linea = document.createElement("div");
         linea.className = "linea-contenedor";
         contenedorFilas.appendChild(linea);
-
+        fila.querySelector(".modificar img").addEventListener("click", () => abrirModificar(producto));
         fila.querySelector(".info img").addEventListener("click", () => abrirPopup(producto));
     });
 }
 
+function abrirModificar(helado) {
+    inputModificarId.value = helado.id;
+    inputModificarNombre.value = helado.nombre;
+    inputModificarStock.value = helado.stock;
+    inputModificarPrecio.value = helado.precio;
+    inputModificarDescripcion.value = helado.descripcion;
+    inputModificarImagen.value = '';
+    
+    previewImagenModificar.innerHTML = '';
+    if (helado.imagen) {
+        previewImagenModificar.innerHTML = `
+            <div style="background: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%);
+                        background-size: 20px 20px;">
+                <img src="${helado.imagen}" style="max-width: 100%; max-height: 200px; background: transparent;">
+            </div>
+        `;
+    }
+    
+    modalModificarOverlay.style.display = 'flex';
+}
+
+function cerrarModificar() {
+    // Limpiar el input de imagen al cerrar
+    inputModificarImagen.value = '';
+    previewImagenModificar.innerHTML = '';
+    
+    // Ocultar el modal
+    modalModificarOverlay.style.display = 'none';
+}
+
+btnCancelarModificar.addEventListener('click', cerrarModificar);
+cerrarPopupModificar.addEventListener('click', cerrarModificar);
+modalModificarOverlay.addEventListener('click', (e) => {
+    if (e.target === modalModificarOverlay) {
+        cerrarModificar();
+    }
+});
+// Manejador de cambio para el input de imagen
+inputModificarImagen.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImagenModificar.innerHTML = `
+                <div style="background: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%);
+                            background-size: 20px 20px;">
+                    <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; background: transparent;">
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        // Si no se selecciona archivo, mantener la imagen actual
+        const currentImg = document.querySelector('#preview-imagen-modificar img');
+        if (!currentImg) {
+            previewImagenModificar.innerHTML = '';
+        }
+    }
+});
+
+// Asegurarse de limpiar al cancelar
+btnCancelarModificar.addEventListener('click', cerrarModificar);
+cerrarPopupModificar.addEventListener('click', cerrarModificar);
+modalModificarOverlay.addEventListener('click', (e) => {
+    if (e.target === modalModificarOverlay) {
+        cerrarModificar();
+    }
+});
+async function validarCamposModificar() {
+    let esValido = true;
+    const errores = [];
+
+    if (!inputModificarNombre.value.trim()) {
+        errores.push("El nombre es obligatorio");
+        esValido = false;
+    }
+
+    if (!inputModificarPrecio.value.trim() || isNaN(inputModificarPrecio.value)) {
+        errores.push("El precio debe ser un número válido");
+        esValido = false;
+    }
+
+    if (!inputModificarStock.value.trim() || isNaN(inputModificarStock.value) || parseInt(inputModificarStock.value) < 0) {
+        errores.push("El stock debe ser un número positivo");
+        esValido = false;
+    }
+
+    if (!inputModificarDescripcion.value.trim()) {
+        errores.push("La descripción es obligatoria");
+        esValido = false;
+    }
+
+    if (errores.length > 0) {
+        alert(errores.join("\n"));
+        return false;
+    }
+
+    return esValido;
+}
+
+formModificar.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    try {        
+        const id = inputModificarId.value;
+        const nombre = inputModificarNombre.value.trim();
+        const stock = parseInt(inputModificarStock.value);
+        const precio = parseFloat(inputModificarPrecio.value);
+        const descripcion = inputModificarDescripcion.value.trim();
+        const file = inputModificarImagen.files[0];
+
+        // Validación básica
+        if (!nombre || !descripcion || isNaN(precio) || isNaN(stock)) {
+            throw new Error("Por favor complete todos los campos correctamente");
+        }
+
+        // Manejo de imagen
+        let imagenBase64;
+        if (file) {
+            imagenBase64 = await comprimirImagen(file);
+        } else {
+            const imgElement = previewImagenModificar.querySelector('img');
+            imagenBase64 = imgElement?.src || null;
+        }
+
+        if (!imagenBase64) {
+            throw new Error("Se requiere una imagen del producto");
+        }
+
+        // Preparar datos para enviar
+        const productoData = {
+            nombre,
+            descripcion,
+            precio,
+            stock,
+            imagen: imagenBase64
+        };
+
+        const response = await fetch(`http://localhost:3000/api/productos/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(productoData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error("Error del servidor:", result);
+            throw new Error(result.error || "Error al actualizar el producto");
+        }
+
+        alert("Producto actualizado correctamente");
+        cerrarModificar();
+        cargarProductos();
+
+    } catch (error) {
+        console.error("Error en la actualización:", error);
+        alert(`Error: ${error.message}`);
+    }
+});
+
 function actualizarPaginaActual() {
     document.getElementById('pagina-actual').textContent = paginaActual;
 }
+
+btnEliminarModificar.addEventListener('click', async function() {
+    const id = inputModificarId.value;
+    
+    if (!id) {
+        alert('No se pudo obtener el ID del producto');
+        return;
+    }
+
+    if (!confirm('¿Estás seguro de que deseas eliminar este producto permanentemente?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/productos/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al eliminar el producto');
+        }
+
+        alert('Producto eliminado correctamente');
+        cerrarModificar();
+        cargarProductos(); // Recargar la lista de productos
+    } catch (error) {
+        alert(`Error al eliminar el producto: ${error.message}`);
+    }
+});
 
 // Paginación
 async function manejarPaginacion(texto = "") {
@@ -309,6 +521,7 @@ async function validarCampos() {
     return esValido;
 }
 
+// Función para guardar el nuevo helado
 async function procesarYGuardarHelado(event) {
     event.preventDefault(); // Detener el formulario
 
@@ -328,7 +541,6 @@ async function procesarYGuardarHelado(event) {
 
     try {
         const imagenComprimida = await comprimirImagen(file);
-        console.log("Longitud de imagen base64:", imagenComprimida.length);
         const nuevoHelado = {
             nombre,
             descripcion,
@@ -336,8 +548,6 @@ async function procesarYGuardarHelado(event) {
             stock,
             imagen: imagenComprimida // Base64 ya comprimido
         };
-
-        console.log("Enviando a backend:", nuevoHelado);
 
         const respuesta = await fetch("http://localhost:3000/api/productos", {
             method: "POST",
@@ -360,34 +570,32 @@ async function procesarYGuardarHelado(event) {
     }
 }
 
-async function comprimirImagen(file, maxWidth = 600, quality = 0.5) {
+async function comprimirImagen(file, maxWidth = 800, quality = 0.7) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-
-        reader.onload = () => {
+        reader.onload = (event) => {
             const img = new Image();
-            img.src = reader.result;
-
+            img.src = event.target.result;
             img.onload = () => {
-                const canvas = document.createElement("canvas");
-                const scale = maxWidth / img.width;
-                canvas.width = maxWidth;
+                const canvas = document.createElement('canvas');
+                const scale = Math.min(maxWidth / img.width, 1);
+                canvas.width = img.width * scale;
                 canvas.height = img.height * scale;
-
-                const ctx = canvas.getContext("2d");
+                
+                const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
-                resolve(compressedBase64);
+                
+                // Usar el formato original o JPEG por defecto
+                const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                resolve(canvas.toDataURL(format, quality));
             };
-
-            img.onerror = err => reject(err);
+            img.onerror = () => reject(new Error("Error al cargar la imagen"));
         };
-
-        reader.onerror = err => reject(err);
+        reader.onerror = () => reject(new Error("Error al leer el archivo"));
+        reader.readAsDataURL(file);
     });
 }
+
 
 function limpiarFormulario() {
     nombreInput.value = "";

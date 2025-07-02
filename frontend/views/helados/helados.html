@@ -61,6 +61,7 @@
                     <div class="ID">ID</div>
                     <div class="nombre">Nombre</div>
                     <div class="precio">Precio</div>
+                    <div class="modificar">Modificar</div>
                     <div class="info">Info</div>
                 </div>
                 <div class="linea-contenedor"></div>
@@ -71,6 +72,37 @@
                 <div id="anterior" class="flecha flecha-anterior"></div>
                 <span id="pagina-actual">0</span>
                 <div id="siguiente" class="flecha flecha-siguiente"></div>
+            </div>
+        </div>
+         <!-- Pop-p Modal modificar -->
+        <div id="modal-modificar-overlay" class="modal-overlay" style="display:none;">
+            <div class="info-extra-helado">
+                <form id="form-modificar-helado" autocomplete="off">
+                    <input type="hidden" id="modificar-id" name="id" />
+                    
+                    <label for="modificar-nombre">Nombre:</label>
+                    <input type="text" id="modificar-nombre" name="nombre" required />
+                    
+                    <label for="modificar-stock">Stock:</label>
+                    <input type="number" id="modificar-stock" name="stock" min="0" required />
+                    
+                    <label for="modificar-precio">Precio:</label>
+                    <input type="number" id="modificar-precio" name="precio" min="0" step="0.01" required />
+                    
+                    <label for="modificar-descripcion">Descripción:</label>
+                    <textarea id="modificar-descripcion" name="descripcion" required></textarea>
+                    
+                    <label for="modificar-imagen">Imagen:</label>
+                    <input type="file" id="modificar-imagen" name="imagen" accept="image/*" />
+                    <div id="preview-imagen-modificar"></div>
+                    
+                    <div class="contenedor-botones-modificar">
+                        <button type="submit" class="btn-guardar-modificacion">Guardar</button>
+                        <button type="button" class="btn-eliminar-modificacion">Eliminar</button>
+                        <button type="button" class="btn-cancelar-modificacion">Cancelar</button>
+                    </div>
+                </form>
+                <div class="cerrar-popup-modificar"></div>
             </div>
         </div>
         <!-- Popup modal para información extra del helado -->
@@ -108,8 +140,6 @@
                 <div class="llenar-3">
                     <div class="texto-campo">Nombre</div>
                     <input type="text" class="boton-llenar" id="boton-llenar-nombre" placeholder="Nombre del helado">
-                    <div class="texto-campo">ID</div>
-                    <input type="text" class="boton-llenar" id="boton-llenar-id" placeholder="ID">
                     <div class="texto-campo">Precio</div>
                     <input type="text" class="boton-llenar" id="boton-llenar-precio" placeholder="Precio">
                     <div class="texto-campo">Cantidad</div>

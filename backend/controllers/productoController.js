@@ -1,48 +1,105 @@
 const Producto = require("../models/Producto");
 
-// Obtener todos los productos
 exports.obtenerProductos = async (req, res) => {
     try {
         const productos = await Producto.obtenerTodos();
         res.json(productos);
     } catch (err) {
-        console.error("Error al obtener productos:", err);
-        res.status(500).json({ mensaje: "Error al obtener productos", error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
-// Agregar un nuevo producto
 exports.agregarProducto = async (req, res) => {
-    console.log("Datos recibidos en agregarProducto:", req.body);
-
-    const { nombre, descripcion, precio, stock, imagen } = req.body;
-    if (!nombre || !descripcion || !precio || !stock || !imagen) {
-        return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
-    }
-
-    const nuevoProducto = new Producto(null, nombre, descripcion, precio, stock, imagen);
-
     try {
+        const { nombre, descripcion, precio, stock, imagen } = req.body;
+        
+        if (!nombre || !descripcion || !precio || !stock || !imagen) {
+            return res.status(400).json({ error: "Todos los campos son obligatorios" });
+        }
+
+        const nuevoProducto = new Producto(null, nombre, descripcion, precio, stock, imagen);
         const insertId = await Producto.agregar(nuevoProducto);
-        res.status(201).json({ id: insertId, nombre, descripcion, precio, stock, imagen });
+        
+        res.status(201).json({ 
+            success: true,
+            id: insertId,
+            producto: nuevoProducto
+        });
     } catch (err) {
-        console.error("Error al agregar producto:", err);
-        res.status(500).json({ mensaje: "Error al agregar producto", error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
-// Eliminar producto por ID
 exports.eliminarProducto = async (req, res) => {
-    const { id } = req.params;
-
     try {
+        const { id } = req.params;
         const eliminado = await Producto.eliminarPorId(id);
+        
         if (!eliminado) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+        
+        res.json({ success: true, message: "Producto eliminado correctamente" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.actualizarProducto = async (req, res) => {
+    try {
+        const { nombre, descripcion, precio, stock, imagen } = req.body;
+        const { id } = req.params;
+
+        if (!nombre || !descripcion || !precio || !stock || !imagen) {
+            return res.status(400).json({ error: "Faltan campos requeridos" });
+        }
+
+        const productoActualizado = new Producto(id, nombre, descripcion, precio, stock, imagen);
+        const actualizado = await Producto.actualizar(productoActualizado);
+
+        if (!actualizado) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        res.json({
+            success: true,
+            message: "Producto actualizado correctamente",
+            producto: productoActualizado
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.reducirStock = async (req, res) => {
+    try {
+        const { id } = req.params;
+        let { cantidad } = req.body;
+
+        cantidad = parseInt(cantidad);
+        if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
+            return res.status(400).json({ mensaje: "Cantidad inválida" });
+        }
+
+        const [producto] = await Producto.obtenerTodos({ where: { id } });
+        if (!producto) {
             return res.status(404).json({ mensaje: "Producto no encontrado" });
         }
-        res.json({ mensaje: "Producto eliminado correctamente" });
-    } catch (err) {
-        console.error("Error al eliminar producto:", err);
-        res.status(500).json({ mensaje: "Error al eliminar producto", error: err });
+
+        if (producto.stock < cantidad) {
+            return res.status(400).json({ 
+                mensaje: `Stock insuficiente: disponible ${producto.stock}` 
+            });
+        }
+
+        producto.stock -= cantidad;
+        await Producto.actualizar(producto);
+
+        res.json({ 
+            mensaje: "Stock actualizado",
+            nuevoStock: producto.stock
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };

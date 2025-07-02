@@ -28,41 +28,91 @@
      </div>
 
      <div class="formulario">
-      <form method="post" id="form" action="/guardardatos">
-            <div class="username">
-                <input type="text" name="user" id="user" required>
-                <label>Nombre del cliente (Ej: Ariana)</label>
-            </div>
-            <div class="ordernumber">
-                <input type="text" name="number" id="number" required>
-                <label>Número de orden (Ej:123)</label>
-            </div>
-            <div class="order">
-                <input type="text" name="orden" id="orden" required>
-                <label>Pedido (Ej: Helado de vainilla)</label>
-            </div>
-            <div class="date">
-                <input type="date" name="fecha" id="fecha" required>
-                <label>Fecha de entrega</label>
-            </div>
-            <div class="time">
-                <input type="time" name="hora" id="hora" required>
-                <label>Hora de entrega</label>
-            </div>
-
-            <div class="error">
-            <%= locals.error %>
-            </div>
-
-            <button type="submit" class="bot">Registrar</button>
-      </form>
-
+         <table>
+             <thead>
+             <tr>
+                 <th>Orden</th>
+                 <th>Referencia</th>
+                 <th>Cliente</th>
+                 <th>Pedido</th>
+                 <th>Fecha</th>
+                 <th>Hora</th>
+                 <th>Acción</th>
+             </tr>
+             </thead>
+             <tbody id="tablaPendientes">
+             <!-- Se llena dinámicamente -->
+             </tbody>
+         </table>
       </div>
     </main>
-    <footer>
-        <div class="footer">
-            <img src="/img/footer.png">
-        </div>
-    </footer>
+  <footer>
+      <div class="footer-container">
+          <div>
+              <img src="/img/Logo.png" alt = Logo>
+              <div class="texto-footer">
+                  <p> 2024 il Gelato Della Nonna. All rights reserved </p>
+              </div>
+          </div>
+      </div>
+  </footer>
   </body>
+
+  <script>
+          async function cargarVentasPendientes() {
+          const res = await fetch("/api/ventas/pendientes");
+          const ventas = await res.json();
+
+          const tabla = document.getElementById("tablaPendientes");
+          if (ventas.length === 0) {
+              tabla.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 1rem;">
+                       <em>No hay ventas pendientes por confirmar</em>
+                    </td>
+                </tr>
+                `;
+          return;
+          }
+          tabla.innerHTML = ventas.map(v =>
+          `
+            <tr>
+                <td>${v.numero_orden}</td>
+                <td>${v.referencia}</td>
+                <td><input value="${v.cliente || ""}" id="cliente-${v.id}" /></td>
+                <td><input value="${v.pedido || ""}" id="pedido-${v.id}" /></td>
+                <td>${new Date(v.fecha).toISOString().split("T")[0]}</td>
+                <td>${v.hora}</td>
+                <td><button onclick="confirmarVenta(${v.id})">Confirmar</button></td>
+            </tr>
+          `).join("");
+      }
+
+          async function confirmarVenta(id) {
+          const cliente = document.getElementById(`cliente-${id}`).value.trim();
+          const pedido = document.getElementById(`pedido-${id}`).value.trim();
+
+          if (!cliente || !pedido) {
+          alert("Debes completar el cliente y el pedido antes de confirmar.");
+          return;
+      }
+
+          const res = await fetch(`/api/ventas/confirmar/${id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cliente, pedido })
+      });
+
+          if (res.ok) {
+          alert("Venta confirmada correctamente");
+          await cargarVentasPendientes();
+      } else {
+          alert("Error al confirmar la venta");
+      }
+      }
+
+          window.onload = cargarVentasPendientes;
+  </script>
+
+  </script>
 </html>
