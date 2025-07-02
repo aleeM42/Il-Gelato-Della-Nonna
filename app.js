@@ -11,10 +11,14 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "frontend", "views"));
 
 //Middlewares
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json({ limit: "5mb" })); // este es el que importa
-app.use(bodyParser.json()); // opcional si ya usas express.json()
+app.use(express.json({ limit: "10mb" })); 
+app.use(bodyParser.json()); 
 
 //Rutas backend
 app.use("/api/productos", productoRoutes);

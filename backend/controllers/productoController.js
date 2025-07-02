@@ -1,87 +1,105 @@
-const db = require("../config/db");
-const { Producto } = require("../models/Producto");
+const Producto = require("../models/Producto");
 
-// Obtener todos los productos
 exports.obtenerProductos = async (req, res) => {
     try {
-        const [productos] = await db.query("SELECT * FROM productos");
+        const productos = await Producto.obtenerTodos();
         res.json(productos);
     } catch (err) {
-        console.error("Error al obtener productos:", err);
-        res.status(500).json({ mensaje: "Error al obtener productos", error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
-// Agregar un nuevo producto
 exports.agregarProducto = async (req, res) => {
-    console.log("Datos recibidos en agregarProducto:", req.body);
-
-    const { nombre, descripcion, precio, stock, imagen } = req.body;
-    if (!nombre || !descripcion || !precio || !stock || !imagen) {
-        return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
-    }
-
     try {
-        const [resultado] = await db.query(
-            "INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)",
-            [nombre, descripcion, precio, stock, imagen]
-        );
-        res.status(201).json({ id: resultado.insertId, nombre, descripcion, precio, stock, imagen });
+        const { nombre, descripcion, precio, stock, imagen } = req.body;
+        
+        if (!nombre || !descripcion || !precio || !stock || !imagen) {
+            return res.status(400).json({ error: "Todos los campos son obligatorios" });
+        }
+
+        const nuevoProducto = new Producto(null, nombre, descripcion, precio, stock, imagen);
+        const insertId = await Producto.agregar(nuevoProducto);
+        
+        res.status(201).json({ 
+            success: true,
+            id: insertId,
+            producto: nuevoProducto
+        });
     } catch (err) {
-        console.error("Error al agregar producto:", err);
-        res.status(500).json({ mensaje: "Error al agregar producto", error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
-// Eliminar producto por ID
 exports.eliminarProducto = async (req, res) => {
-    const { id } = req.params;
-
     try {
-        const [resultado] = await db.query("DELETE FROM productos WHERE id = ?", [id]);
-        if (resultado.affectedRows === 0) {
-            return res.status(404).json({ mensaje: "Producto no encontrado" });
+        const { id } = req.params;
+        const eliminado = await Producto.eliminarPorId(id);
+        
+        if (!eliminado) {
+            return res.status(404).json({ error: "Producto no encontrado" });
         }
-        res.json({ mensaje: "Producto eliminado correctamente" });
+        
+        res.json({ success: true, message: "Producto eliminado correctamente" });
     } catch (err) {
-        console.error("Error al eliminar producto:", err);
-        res.status(500).json({ mensaje: "Error al eliminar producto", error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
-//Reducir el stock
-exports.reducirStock = async (req, res) => {
-    const { id } = req.params;
-    let { cantidad } = req.body;
-
-    // Verifica que cantidad sea un número entero válido
-    cantidad = parseInt(cantidad);
-    if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
-        return res.status(400).json({ mensaje: "Cantidad inválida para reducir stock" });
-    }
-
+exports.actualizarProducto = async (req, res) => {
     try {
-        // Consultar el producto y su stock actual
-        const [resultado] = await db.query("SELECT stock FROM productos WHERE id = ?", [id]);
-        if (resultado.length === 0) {
+        const { nombre, descripcion, precio, stock, imagen } = req.body;
+        const { id } = req.params;
+
+        if (!nombre || !descripcion || !precio || !stock || !imagen) {
+            return res.status(400).json({ error: "Faltan campos requeridos" });
+        }
+
+        const productoActualizado = new Producto(id, nombre, descripcion, precio, stock, imagen);
+        const actualizado = await Producto.actualizar(productoActualizado);
+
+        if (!actualizado) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        res.json({
+            success: true,
+            message: "Producto actualizado correctamente",
+            producto: productoActualizado
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.reducirStock = async (req, res) => {
+    try {
+        const { id } = req.params;
+        let { cantidad } = req.body;
+
+        cantidad = parseInt(cantidad);
+        if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
+            return res.status(400).json({ mensaje: "Cantidad inválida" });
+        }
+
+        const [producto] = await Producto.obtenerTodos({ where: { id } });
+        if (!producto) {
             return res.status(404).json({ mensaje: "Producto no encontrado" });
         }
 
-        const stockActual = parseInt(resultado[0].stock);
-
-        if (stockActual < cantidad) {
-            return res.status(400).json({ mensaje: `Stock insuficiente: disponible ${stockActual}, solicitado ${cantidad}` });
+        if (producto.stock < cantidad) {
+            return res.status(400).json({ 
+                mensaje: `Stock insuficiente: disponible ${producto.stock}` 
+            });
         }
 
-        const nuevoStock = stockActual - cantidad;
+        producto.stock -= cantidad;
+        await Producto.actualizar(producto);
 
-        // Actualizar el stock en la base de datos
-        await db.query("UPDATE productos SET stock = ? WHERE id = ?", [nuevoStock, id]);
-
-        res.status(200).json({ mensaje: "Stock actualizado correctamente", stockAnterior: stockActual, stockNuevo: nuevoStock });
-
+        res.json({ 
+            mensaje: "Stock actualizado",
+            nuevoStock: producto.stock
+        });
     } catch (error) {
-        console.error("🛑 Error al reducir stock:", error);
-        res.status(500).json({ mensaje: "Error interno del servidor", error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
